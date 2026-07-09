@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 10: Format appointment dates cleanly in Slack layout
+function formatCleanDate(isoString: string): string { return isoString.split('T')[0]; }
+
 // Sprint 09: Filter out local test user emails from external alerts
 function shouldSendAlert(email: string): boolean { return !email.endsWith('.local'); }
 
