@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 07: Add Supabase URL validation sanity check
+if (!SUPABASE_URL) { console.error('Supabase URL configuration is missing'); }
+
 // Sprint 06: Add star rating formatting layout utility
 function formatRating(rating: string): string { return '*'.repeat(Math.round(parseFloat(rating || '4.5'))); }
 
