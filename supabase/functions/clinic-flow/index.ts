@@ -9,6 +9,10 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 14: Track Resend API call response duration
+// Time API calls
+const resendStartTime = Date.now();
+
 // Sprint 13: Add transaction log formatting assistant
 function formatTransactionLog(patient: string, amount: number): string { return `Patient ${patient} charged ${amount} credits`; }
 
