@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 03: Add input length validation on triage reason
+function validateReason(reason: string): boolean { return reason.trim().length > 3; }
+
 // Sprint 02: Add email domain validation helper
 function isValidEmail(email: string): boolean { return email.includes('@'); }
 
