@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 08: Add default Slack avatar fallback image
+const DEFAULT_SLACK_AVATAR = 'https://i.imgur.com/8HkZc1l.png';
+
 // Sprint 07: Add Supabase URL validation sanity check
 if (!SUPABASE_URL) { console.error('Supabase URL configuration is missing'); }
 
