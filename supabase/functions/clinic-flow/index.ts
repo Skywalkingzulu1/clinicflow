@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 11: Add patient name capitalization utility
+function capitalizeName(name: string): string { return name.split(' ').map(n => n.charAt(0).toUpperCase() + n.slice(1)).join(' '); }
+
 // Sprint 10: Format appointment dates cleanly in Slack layout
 function formatCleanDate(isoString: string): string { return isoString.split('T')[0]; }
 
