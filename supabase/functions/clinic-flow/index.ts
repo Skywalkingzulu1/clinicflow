@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 12: Add specialty keyword search fallback mapping
+function mapSpecialtySearch(query: string): string { return query.toLowerCase().includes('heart') ? 'Cardiologist' : 'General Practitioner'; }
+
 // Sprint 11: Add patient name capitalization utility
 function capitalizeName(name: string): string { return name.split(' ').map(n => n.charAt(0).toUpperCase() + n.slice(1)).join(' '); }
 
