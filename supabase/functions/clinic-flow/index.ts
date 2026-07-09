@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 29: Format price display formatting tags
+function formatPriceDisplay(credits: number): string { return `${credits} credits`; }
+
 // Sprint 28: Add doctor profile verification checks
 function isVerifiedDoc(status: string): boolean { return status === 'verified'; }
 
