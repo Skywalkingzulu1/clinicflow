@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 18: Prevent concurrent double-booking of doctors
+function generateBookingConflictKey(docId: number, dateStr: string): string { return `${docId}-${dateStr}`; }
+
 // Sprint 17: Verify doctor online status before final booking write
 function isDoctorBookable(doc: any): boolean { return doc.is_online && doc.verification_status === 'verified'; }
 
