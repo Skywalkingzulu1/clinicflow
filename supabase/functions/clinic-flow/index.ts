@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 23: Track booking source device type indicators
+function getRequestSource(headers: Headers): string { return headers.get('user-agent') || 'SlackBot'; }
+
 // Sprint 22: Log active connection statuses of client pools
 function logPoolConnection(): void { console.log('Supabase client pool connection: ACTIVE'); }
 
