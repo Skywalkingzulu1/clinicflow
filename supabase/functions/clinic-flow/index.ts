@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 17: Verify doctor online status before final booking write
+function isDoctorBookable(doc: any): boolean { return doc.is_online && doc.verification_status === 'verified'; }
+
 // Sprint 16: Implement text fallback for text-only Slack clients
 const SLACK_TEXT_FALLBACK = 'ClinicFlow Booking Triage System';
 
