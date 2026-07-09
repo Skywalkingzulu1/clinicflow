@@ -1,0 +1,8 @@
+{
+  "name": "Slack Agent Builder Challenge",
+  "url": "https://slack-agent-challenge.devpost.com",
+  "deadline": "2026-07-13T17:00:00Z",
+  "required_tech": ["Slack AI", "Model Context Protocol (MCP)", "Real-Time Search (RTS) API"],
+  "tracks": ["New Slack Agent", "Slack Agent for Good"],
+  "criteria": ["Creativity", "Functionality", "Impact"]
+}

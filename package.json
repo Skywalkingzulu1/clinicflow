@@ -1,0 +1,14 @@
+{
+  "name": "clinicflow",
+  "version": "1.0.0",
+  "description": "ClinicFlow Slack Agent",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@slack/bolt": "^3.14.0",
+    "@supabase/supabase-js": "^2.38.4",
+    "dotenv": "^16.3.1"
+  }
+}
