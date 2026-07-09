@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 16: Implement text fallback for text-only Slack clients
+const SLACK_TEXT_FALLBACK = 'ClinicFlow Booking Triage System';
+
 // Sprint 15: Add dynamic platform commission fee calculator
 function calculatePlatformFee(basePrice: number): number { return basePrice * 0.20; }
 
