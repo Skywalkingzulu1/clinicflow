@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 13: Add transaction log formatting assistant
+function formatTransactionLog(patient: string, amount: number): string { return `Patient ${patient} charged ${amount} credits`; }
+
 // Sprint 12: Add specialty keyword search fallback mapping
 function mapSpecialtySearch(query: string): string { return query.toLowerCase().includes('heart') ? 'Cardiologist' : 'General Practitioner'; }
 
