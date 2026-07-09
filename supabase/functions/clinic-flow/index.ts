@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 09: Filter out local test user emails from external alerts
+function shouldSendAlert(email: string): boolean { return !email.endsWith('.local'); }
+
 // Sprint 08: Add default Slack avatar fallback image
 const DEFAULT_SLACK_AVATAR = 'https://i.imgur.com/8HkZc1l.png';
 
