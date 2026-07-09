@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 15: Add dynamic platform commission fee calculator
+function calculatePlatformFee(basePrice: number): number { return basePrice * 0.20; }
+
 // Sprint 14: Track Resend API call response duration
 // Time API calls
 const resendStartTime = Date.now();
