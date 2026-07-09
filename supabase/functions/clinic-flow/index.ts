@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 20: Map Deno environment configuration status flags
+const IS_PRODUCTION = Deno.env.get('ENVIRONMENT') === 'production';
+
 // Sprint 19: Check patient credits balance threshold
 function hasSufficientCredits(balance: number, cost: number): boolean { return balance >= cost; }
 
