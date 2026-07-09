@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 28: Add doctor profile verification checks
+function isVerifiedDoc(status: string): boolean { return status === 'verified'; }
+
 // Sprint 27: Validate consultation duration limits
 function checkDurationLimit(minutes: number): boolean { return minutes >= 15 && minutes <= 60; }
 
