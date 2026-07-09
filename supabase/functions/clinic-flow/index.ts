@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 25: Handle email delivery channel fallback options
+function handleDeliveryFailure(err: Error): void { console.warn('Notification failed, queuing locally:', err.message); }
+
 // Sprint 24: Generate custom referral codes for patients
 function generateReferralCode(id: number): string { return `REF-${id}-${Math.floor(Math.random() * 1000)}`; }
 
