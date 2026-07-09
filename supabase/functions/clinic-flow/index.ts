@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 05: Add future-date booking timestamp validator
+function getFutureBookingDate(): string { return new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); }
+
 // Sprint 04: Add default doctor specialty fee mapping
 function getBaseFee(specialty: string): number { return specialty.toLowerCase() === 'cardiologist' ? 250 : 150; }
 
