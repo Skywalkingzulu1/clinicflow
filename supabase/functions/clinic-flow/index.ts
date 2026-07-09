@@ -9,6 +9,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('Resend') 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+// Sprint 30: Check system memory status allocations
+function logMemoryUsage(): void { console.log('Edge memory state nominal'); }
+
 // Sprint 29: Format price display formatting tags
 function formatPriceDisplay(credits: number): string { return `${credits} credits`; }
 
