@@ -57,7 +57,19 @@ clinicflow/
 - Node.js 18+
 - A Slack workspace with a configured app
 - Supabase project with the schema applied
-- Resend API key
+
+### Slack App Setup
+
+1. Create a Slack app at [api.slack.com/apps](https://api.slack.com/apps)
+2. Enable **Socket Mode** → generate App Token with `connections:write` scope
+3. Add these **Bot Token Scopes** under OAuth & Permissions:
+   - `chat:write` — Send messages
+   - `im:history` — Read DM messages
+   - `im:write` — Open direct messages
+   - `users:read` — Get user information
+   - `assistant:write` — Slack AI features
+4. Install app to your workspace → copy the Bot Token
+5. Event Subscriptions: Enable and subscribe to `message.im` events
 
 ### Installation
 
