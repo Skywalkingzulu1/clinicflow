@@ -1,401 +1,387 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClinicFlow — Autonomous Healthtech Slack Agent</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #4A154B; /* Slack Purple */
-            --primary-light: #611f69;
-            --accent: #36B37E; /* Success Green */
-            --bg-dark: #0B0E14;
-            --card-bg: #161A23;
-            --text-light: #ECF0F1;
-            --text-muted: #95A5A6;
-            --border: rgba(255,255,255,0.1);
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ClinicFlow — Autonomous Healthtech Slack Agent</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #141b2e;
+      --fg: #e8edf7;
+      --muted: #9aa7c2;
+      --border: #243049;
+      --accent: #5eead4;
+      --accent-fg: #0b1020;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --slack-purple: #611f69;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-12: 48px;
+      --space-16: 64px;
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+    }
+    a { color: var(--accent); text-decoration: none; transition: opacity 0.2s; }
+    a:hover { opacity: 0.8; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    /* Layout */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 var(--space-6); }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-6) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-fg);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-6);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-fg);
+    }
+    .btn-primary:hover { box-shadow: 0 4px 12px rgba(94,234,212,0.3); }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--fg);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.05); }
 
-        header {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    /* Hero */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: center;
+      padding: var(--space-16) 0;
+    }
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; text-align: center; }
+      .hero-buttons { justify-content: center; }
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      background: rgba(94,234,212,0.1);
+      border: 1px solid rgba(94,234,212,0.2);
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-bottom: var(--space-6);
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: var(--space-6);
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-desc {
+      font-size: 1.15rem;
+      color: var(--muted);
+      margin-bottom: var(--space-8);
+      max-width: 500px;
+    }
+    .hero-buttons { display: flex; gap: var(--space-4); }
 
-        .logo {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ECF0F1 0%, #36B37E 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    /* Slack Mockup */
+    .slack-mockup {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    .slack-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      background: rgba(0,0,0,0.2);
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: var(--error); }
+    .dot-yellow { background: var(--warning); }
+    .dot-green { background: var(--success); }
+    .slack-title { margin-left: var(--space-2); font-size: 0.85rem; color: var(--muted); }
+    .slack-body { padding: var(--space-4); }
 
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            border: 1px solid var(--primary-light);
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .msg { display: flex; gap: var(--space-3); margin-bottom: var(--space-4); }
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+    .avatar-user { background: var(--slack-purple); color: white; }
+    .avatar-bot { background: var(--accent); color: var(--accent-fg); }
+    .msg-content { flex: 1; min-width: 0; }
+    .msg-header { display: flex; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-1); }
+    .username { font-weight: 600; font-size: 0.9rem; }
+    .timestamp { font-size: 0.75rem; color: var(--muted); }
+    .msg-text { font-size: 0.9rem; color: var(--fg); }
 
-        .btn:hover {
-            background-color: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(97, 31, 105, 0.4);
-        }
+    .block-card {
+      background: rgba(0,0,0,0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: var(--space-3);
+      margin-top: var(--space-3);
+    }
+    .block-title { font-weight: 600; font-size: 0.9rem; margin-bottom: var(--space-2); }
+    .block-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: var(--space-3); }
+    .block-btn {
+      background: var(--accent);
+      color: var(--accent-fg);
+      border: none;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .block-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        .btn-secondary {
-            background-color: transparent;
-            border: 1px solid var(--border);
-        }
+    /* Features */
+    .features { padding: var(--space-16) 0; }
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: var(--space-12);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--space-6);
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-8);
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(94,234,212,0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(94,234,212,0.1);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 1.25rem;
+      margin-bottom: var(--space-6);
+    }
+    .card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: var(--space-3); }
+    .card p { color: var(--muted); font-size: 0.95rem; }
 
-        .btn-secondary:hover {
-            background-color: rgba(255,255,255,0.05);
-            transform: translateY(-2px);
-        }
+    /* Tech Stack */
+    .tech { padding: var(--space-16) 0; border-top: 1px solid var(--border); }
+    .pills { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: center; margin-top: var(--space-6); }
+    .pill {
+      padding: var(--space-2) var(--space-4);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
 
-        .hero {
-            max-width: 1200px;
-            margin: 4rem auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        @media (max-width: 768px) {
-            .hero {
-                grid-template-columns: 1fr;
-                text-align: center;
-                gap: 2rem;
-            }
-        }
-
-        .hero-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #FFFFFF 0%, #BDC3C7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-title span {
-            background: linear-gradient(135deg, #36B37E 0%, #2ECC71 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-desc {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            margin-bottom: 2rem;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-
-        @media (max-width: 768px) {
-            .hero-buttons {
-                justify-content: center;
-            }
-        }
-
-        /* Mockup Slack Interface */
-        .slack-mockup {
-            background-color: #1A1D21; /* Slack Dark Theme */
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-
-        .slack-header {
-            background-color: #121519;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .dot-red { background-color: #E74C3C; }
-        .dot-yellow { background-color: #F1C40F; }
-        .dot-green { background-color: #2ECC71; }
-
-        .slack-title {
-            margin-left: 10px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .slack-body {
-            padding: 20px;
-            font-family: sans-serif;
-            font-size: 0.95rem;
-        }
-
-        .message {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 6px;
-            background-color: #E67E22;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            font-size: 0.9rem;
-        }
-
-        .avatar-bot {
-            background-color: var(--primary);
-        }
-
-        .msg-content {
-            flex: 1;
-        }
-
-        .msg-header {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-            margin-bottom: 4px;
-        }
-
-        .username {
-            font-weight: bold;
-            color: #FFF;
-        }
-
-        .timestamp {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .block-card {
-            background-color: #222529;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent);
-            padding: 15px;
-            margin-top: 10px;
-            max-width: 400px;
-        }
-
-        .block-title {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: white;
-        }
-
-        .block-btn {
-            background-color: #36B37E;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 0.85rem;
-        }
-
-        /* Features Section */
-        .features {
-            max-width: 1200px;
-            margin: 6rem auto;
-            padding: 0 20px;
-        }
-
-        .section-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            padding: 2rem;
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(97, 31, 105, 0.4);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        .card-icon {
-            font-size: 2rem;
-            color: var(--accent);
-            margin-bottom: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .card-desc {
-            color: var(--text-muted);
-        }
-
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 3rem 20px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-    </style>
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: var(--space-8) 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
 </head>
 <body>
-
+  <div class="container">
     <header>
-        <div class="logo">
-            <i class="fa-solid fa-hospital-user"></i> ClinicFlow
-        </div>
-        <a href="https://github.com/Skywalkingzulu1/clinicflow" class="btn btn-secondary">
-            <i class="fa-brands fa-github"></i> View Repo
-        </a>
+      <div class="logo">
+        <div class="logo-icon">CF</div>
+        ClinicFlow
+      </div>
+      <a href="https://github.com/Skywalkingzulu1/clinicflow" class="btn btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View Repo
+      </a>
     </header>
 
-    <main>
-        <section class="hero">
-            <div>
-                <h1 class="hero-title">The Medical Desk <span>Inside Slack</span>.</h1>
-                <p class="hero-desc">ClinicFlow is an autonomous workspace agent that triages patient symptoms, queries doctor availabilities, and manages bookings directly in chat.</p>
-                <div class="hero-buttons">
-                    <a href="https://github.com/Skywalkingzulu1/clinicflow" class="btn">
-                        <i class="fa-solid fa-code"></i> Explore Code
-                    </a>
-                    <a href="https://slack-agent-challenge.devpost.com" class="btn btn-secondary">
-                        Devpost Project
-                    </a>
-                </div>
+    <section class="hero">
+      <div>
+        <div class="hero-badge">Slack Agent Builder Challenge 2026</div>
+        <h1>The Medical Desk <span>Inside Slack</span></h1>
+        <p class="hero-desc">An autonomous workspace agent that triages patient symptoms, queries doctor availability, and manages bookings directly in chat.</p>
+        <div class="hero-buttons">
+          <a href="https://github.com/Skywalkingzulu1/clinicflow" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            Explore Code
+          </a>
+          <a href="https://slack-agent-challenge.devpost.com" class="btn btn-secondary">Devpost Project</a>
+        </div>
+      </div>
+
+      <div class="slack-mockup">
+        <div class="slack-header">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <span class="slack-title"># clinic-flow-booking</span>
+        </div>
+        <div class="slack-body">
+          <div class="msg">
+            <div class="avatar avatar-user">JP</div>
+            <div class="msg-content">
+              <div class="msg-header">
+                <span class="username">Jabu Patient</span>
+                <span class="timestamp">12:35 PM</span>
+              </div>
+              <div class="msg-text">I have a headache and need to see a GP</div>
             </div>
-
-            <div class="slack-mockup">
-                <div class="slack-header">
-                    <div class="dot dot-red"></div>
-                    <div class="dot dot-yellow"></div>
-                    <div class="dot dot-green"></div>
-                    <div class="slack-title"># clinic-flow-booking</div>
-                </div>
-                <div class="slack-body">
-                    <div class="message">
-                        <div class="avatar">JP</div>
-                        <div class="msg-content">
-                            <div class="msg-header">
-                                <span class="username">Jabu Patient</span>
-                                <span class="timestamp">12:35 PM</span>
-                            </div>
-                            <div>I have a headache and need to schedule an appointment with a GP.</div>
-                        </div>
-                    </div>
-
-                    <div class="message">
-                        <div class="avatar avatar-bot">CF</div>
-                        <div class="msg-content">
-                            <div class="msg-header">
-                                <span class="username">ClinicFlow Agent</span>
-                                <span class="timestamp">12:35 PM</span>
-                            </div>
-                            <div>🏥 *Triage Report: Available Doctors*<br>Here are the verified practitioners ready to consult:</div>
-                            <div class="block-card">
-                                <div class="block-title">Dr. Sam (Cardiologist)</div>
-                                <div>📍 Sandton, JHB | 🪙 150 credits</div>
-                                <button class="block-btn">Book Appointment</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          </div>
+          <div class="msg">
+            <div class="avatar avatar-bot">CF</div>
+            <div class="msg-content">
+              <div class="msg-header">
+                <span class="username">ClinicFlow</span>
+                <span class="timestamp">12:35 PM</span>
+              </div>
+              <div class="msg-text">Based on your symptoms, here are available specialists:</div>
+              <div class="block-card">
+                <div class="block-title">Dr. Sam Nkosi — General Practitioner</div>
+                <div class="block-meta">Sandton, JHB · 150 credits</div>
+                <button class="block-btn">Book Appointment</button>
+              </div>
             </div>
-        </section>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <section class="features">
-            <h2 class="section-title">Product Architecture</h2>
-            <div class="grid">
-                <div class="card">
-                    <div class="card-icon"><i class="fa-solid fa-comments"></i></div>
-                    <h3 class="card-title">Slack Bolt App</h3>
-                    <p class="card-desc">Wires Slack's real-time events and Socket Mode to trigger triage Block Kit panels dynamically.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon"><i class="fa-solid fa-database"></i></div>
-                    <h3 class="card-title">Supabase Database</h3>
-                    <p class="card-desc">Integrates our custom schema to read online doctor statuses and write confirmed booking logs.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
-                    <h3 class="card-title">Resend Notification</h3>
-                    <p class="card-desc">Fires immediate transaction emails to patients upon staff appointment confirmation.</p>
-                </div>
-            </div>
-        </section>
-    </main>
+    <section class="features">
+      <h2 class="section-title">Product Architecture</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3>Slack Bolt App</h3>
+          <p>Real-time event handling via Socket Mode. Triage Block Kit panels trigger on patient messages.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </div>
+          <h3>Supabase Database</h3>
+          <p>Reads doctor availability, writes booking logs, manages patient profiles with Row-Level Security.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h3>Prescription Auditor</h3>
+          <p>AI-powered safety checks for medications. Analyzes dosage, interactions, and provides clinical recommendations.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <h3>Resend Notifications</h3>
+          <p>Instant email confirmations sent to patients upon booking. Transactional, reliable, fast.</p>
+        </div>
+      </div>
+    </section>
 
-    <footer>
-        <p>&copy; 2026 ClinicFlow. Built for the Slack Agent Builder Challenge.</p>
-    </footer>
+    <section class="tech">
+      <h2 class="section-title">Built With</h2>
+      <div class="pills">
+        <span class="pill">Slack Bolt SDK</span>
+        <span class="pill">Node.js</span>
+        <span class="pill">Supabase</span>
+        <span class="pill">Resend</span>
+        <span class="pill">OpenAI</span>
+        <span class="pill">Block Kit</span>
+        <span class="pill">Socket Mode</span>
+      </div>
+    </section>
+  </div>
 
+  <footer>
+    <div class="container">
+      <p>2026 ClinicFlow · Built for the Slack Agent Builder Challenge</p>
+    </div>
+  </footer>
 </body>
 </html>

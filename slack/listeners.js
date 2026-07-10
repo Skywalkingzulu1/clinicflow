@@ -1,5 +1,6 @@
 const { getAvailableDoctors, getProfileByEmail, createProfile, bookAppointment } = require('../services/supabaseService');
 const { sendBookingNotification } = require('../services/resendService');
+const { auditPrescription, getAuditBlocks } = require('../services/prescriptionService');
 const { getDoctorListBlocks, getBookingConfirmationBlocks } = require('./templates');
 
 function registerListeners(app) {
@@ -77,6 +78,47 @@ function registerListeners(app) {
       await respond({
         text: "⚠️ Failed to book appointment. Please try again."
       });
+    }
+  });
+
+  // Listen for prescription audit requests
+  app.message(/(prescription|audit|medication|drug)/i, async ({ message, say }) => {
+    try {
+      const text = message.text || "";
+      
+      // Try to extract medication and dosage from message
+      // Example: "audit prescription Metformin 500mg"
+      const match = text.match(/(?:prescription|audit|medication|drug)\s+(.+)/i);
+      if (!match) {
+        await say("💊 To audit a prescription, please specify the medication and dosage.\nExample: `audit prescription Metformin 500mg`");
+        return;
+      }
+
+      const parts = match[1].trim().split(/\s+/);
+      const medication = parts[0];
+      const dosage = parts[1] || "500mg";
+
+      console.log(`Prescription audit request: ${medication} ${dosage}`);
+
+      // Run the audit
+      const audit = await auditPrescription({
+        medication,
+        dosage,
+        patientAge: null,
+        patientWeight: null,
+        currentMedications: []
+      });
+
+      // Generate and send audit report
+      const blocks = getAuditBlocks(audit, medication, dosage);
+      await say({
+        blocks,
+        text: `Prescription Audit: ${medication} ${dosage}`
+      });
+
+    } catch (error) {
+      console.error('Error handling prescription audit:', error);
+      await say("⚠️ Sorry, an error occurred while auditing the prescription. Please try again later.");
     }
   });
 }

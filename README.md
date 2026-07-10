@@ -1,53 +1,144 @@
 # ClinicFlow — Autonomous Healthtech Slack Agent
 
-ClinicFlow is a workspace agent built for Slack that automates patient triage, doctor scheduling, and appointment booking using **Supabase** and the **Model Context Protocol (MCP)**.
+An autonomous workspace agent built for the [Slack Agent Builder Challenge](https://slack-agent-challenge.devpost.com) that triages patient symptoms, audits prescriptions, and manages bookings directly in chat.
 
 ---
 
-## 🧭 Overview (3W1H)
+## What
 
-### ❓ What is it?
-An autonomous front desk assistant operating entirely inside Slack. It collects patient symptoms, displays available doctors from a Supabase database, handles booking clicks, and emails confirmation notifications via Resend.
+ClinicFlow is a Slack bot that acts as a virtual front desk for medical practices. Patients DM the bot with symptoms, and it instantly returns available doctors from a Supabase database, lets them book appointments, audits prescriptions for safety, and sends email confirmations — all without leaving Slack.
 
-### 🎯 Why build it?
-Medical practices spend dozens of hours managing calendars and answering basic calls, while patients experience delays booking simple consultations. ClinicFlow eliminates admin friction by bringing healthcare scheduling into the workspace.
+## Why
 
-### 👤 Who is it for?
-Patients who want frictionless access to medical booking, and clinic staff who want to manage operations and schedules directly within their standard chat interface.
+Medical practices spend 20+ hours/week on scheduling calls. Patients wait on hold just to find out when a doctor is free. ClinicFlow eliminates this friction by bringing healthcare scheduling into the workspace where people already work.
 
-### ⚙️ How does it work?
-1. **Interactive UI**: The Slack Bolt SDK listens to triage keywords and returns interactive cards using Block Kit.
-2. **Database State**: Reads and updates `Profiles`, `Doctors`, and `appointments` tables in Supabase.
-3. **Automated Notification**: Fires confirmation emails using the Resend API.
+## Who
 
----
+- **Patients** who want frictionless access to medical booking
+- **Clinic staff** who want to manage operations within their chat interface
+- **Healthcare startups** looking for AI-powered patient engagement
 
-## 🛠️ Project Structure
-* [index.js](file:///C:/Users/stumi/clinicflow/index.js): Application entry point.
-* [slack/app.js](file:///C:/Users/stumi/clinicflow/slack/app.js): Bolt app configuration.
-* [slack/listeners.js](file:///C:/Users/stumi/clinicflow/slack/listeners.js): Event controllers (triage, bookings).
-* [slack/templates.js](file:///C:/Users/stumi/clinicflow/slack/templates.js): Block Kit JSON layouts.
-* [services/supabaseService.js](file:///C:/Users/stumi/clinicflow/services/supabaseService.js): Supabase database queries.
-* [services/resendService.js](file:///C:/Users/stumi/clinicflow/services/resendService.js): Resend email notification service.
-* [supabase/migrations/20260709000000_init_schema.sql](file:///C:/Users/stumi/clinicflow/supabase/migrations/20260709000000_init_schema.sql): Database table definitions.
+## How
+
+1. **Slack Bolt SDK** — Listens to triage keywords via Socket Mode, returns interactive Block Kit cards
+2. **Supabase** — Reads doctor availability, writes booking logs, manages patient profiles
+3. **Resend** — Sends instant email confirmations upon booking
+4. **OpenAI** — Powers the Prescription Auditor for safety checks and drug interaction analysis
 
 ---
 
-## ⚙️ Local Setup
+## Project Structure
 
-1. **Install dependencies**:
+```
+clinicflow/
+├── config/
+│   └── supabase.js              # Supabase client setup
+├── services/
+│   ├── resendService.js         # Email notification API
+│   ├── supabaseService.js       # DB queries (Profiles, Doctors, appointments)
+│   └── prescriptionService.js   # Prescription audit with OpenAI
+├── slack/
+│   ├── app.js                   # Bolt app initialization
+│   ├── listeners.js             # Event & message handlers
+│   └── templates.js             # Block Kit JSON layouts
+├── supabase/
+│   └── migrations/
+│       └── 20260709000000_init_schema.sql
+├── .env.example                 # Environment variables template
+├── index.js                     # App entry point
+├── index.html                   # GitHub Pages landing page
+└── package.json
+```
+
+---
+
+## Local Setup
+
+### Prerequisites
+- Node.js 18+
+- A Slack workspace with a configured app
+- Supabase project with the schema applied
+- Resend API key
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Skywalkingzulu1/clinicflow.git
+   cd clinicflow
+   ```
+
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-2. **Configure environment**:
-   Create a `.env` file based on `.env.example`:
+3. Configure environment:
    ```bash
    cp .env.example .env
    ```
-   Add your Slack API credentials (`SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET`, `SLACK_APP_TOKEN`) and your Resend key (`RESEND_API_KEY`).
+   Fill in your API keys in `.env`:
+   - `SLACK_BOT_TOKEN` — Your Slack bot token
+   - `SLACK_SIGNING_SECRET` — Your Slack app signing secret
+   - `SLACK_APP_TOKEN` — Your Slack app-level token (Socket Mode)
+   - `SUPABASE_URL` — Your Supabase project URL
+   - `SUPABASE_ANON_KEY` — Your Supabase anonymous key
+   - `RESEND_API_KEY` — Your Resend API key
 
-3. **Start the application**:
+4. Start the application:
    ```bash
    npm start
    ```
+
+---
+
+## How It Works
+
+### Triage Flow
+1. **Patient sends a message** — DM or mention with keywords like "book", "appointment", "doctor", or "triage"
+2. **Bot triages the request** — Queries available doctors from Supabase based on specialty and availability
+3. **Interactive card appears** — Block Kit layout shows doctor list with "Book" buttons
+4. **Patient books** — Clicks a button, appointment is created in the database
+5. **Confirmation sent** — Email notification via Resend, Slack confirmation card
+
+### Prescription Audit Flow
+1. **User requests audit** — Sends message like "audit prescription Metformin 500mg"
+2. **Bot analyzes** — OpenAI reviews medication, dosage, and potential interactions
+3. **Audit report appears** — Safety score, dosage check, interactions, and recommendation displayed
+4. **Action taken** — APPROVE, APPROVE_WITH_MONITORING, REJECT, or CONSULT_PHYSICIAN
+
+---
+
+## Sponsor Tech Integration
+
+### Supabase (Load-Bearing)
+- **How used:** Reads `Doctors` table for availability, writes to `appointments` and `Profiles` tables
+- **Why essential:** Without Supabase, the bot has no data to query. It IS the backend.
+
+### Resend (Load-Bearing)
+- **How used:** Sends transactional email confirmations upon booking
+- **Why essential:** Patients expect confirmation. Without Resend, the booking loop is incomplete.
+
+### OpenAI (Load-Bearing)
+- **How used:** Powers the Prescription Auditor with GPT-4o-mini for safety analysis, dosage checks, and drug interaction detection
+- **Why essential:** Prescription auditing requires medical reasoning that basic rules can't provide.
+
+---
+
+## API Keys Required
+
+| Key | Where to Get It | Purpose |
+|-----|-----------------|---------|
+| `SLACK_BOT_TOKEN` | [api.slack.com/apps](https://api.slack.com/apps) | Bot authentication |
+| `SLACK_SIGNING_SECRET` | [api.slack.com/apps](https://api.slack.com/apps) | Request verification |
+| `SLACK_APP_TOKEN` | [api.slack.com/apps](https://api.slack.com/apps) → Socket Mode | Real-time events |
+| `SUPABASE_URL` | [supabase.com/dashboard](https://supabase.com/dashboard) | Database access |
+| `SUPABASE_ANON_KEY` | [supabase.com/dashboard](https://supabase.com/dashboard) → Settings → API | Database access |
+| `RESEND_API_KEY` | [resend.com/api-keys](https://resend.com/api-keys) | Email notifications |
+| `OPENAI_API_KEY` | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | Prescription auditing |
+
+---
+
+## License
+
+MIT

@@ -1,14 +1,17 @@
 {
   "name": "clinicflow",
   "version": "1.0.0",
-  "description": "ClinicFlow Slack Agent",
+  "description": "ClinicFlow - Autonomous Healthtech Slack Agent",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "node --watch index.js"
   },
   "dependencies": {
     "@slack/bolt": "^3.14.0",
     "@supabase/supabase-js": "^2.38.4",
     "dotenv": "^16.3.1"
-  }
+  },
+  "keywords": ["slack", "bot", "healthcare", "triage", "appointment"],
+  "license": "MIT"
 }
