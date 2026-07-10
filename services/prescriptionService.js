@@ -1,86 +1,118 @@
-require('dotenv').config();
-
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+/**
+ * Prescription Audit Service
+ * Uses rule-based logic for medication safety checks
+ * Can be extended to use Slack AI or other LLM backends
+ */
 
 /**
  * Audit a prescription for safety, dosage, and drug interactions
- * Uses OpenAI for LLM reasoning
  */
 async function auditPrescription({ medication, dosage, patientAge, patientWeight, currentMedications = [] }) {
-  if (!OPENAI_API_KEY) {
-    console.warn('Warning: OPENAI_API_KEY is not defined. Using basic audit.');
-    return basicAudit(medication, dosage);
-  }
-
-  const prompt = `You are a clinical pharmacist AI assistant. Audit this prescription for safety:
-
-Medication: ${medication}
-Dosage: ${dosage}
-Patient Age: ${patientAge || 'Not specified'}
-Patient Weight: ${patientWeight || 'Not specified'}
-Current Medications: ${currentMedications.length > 0 ? currentMedications.join(', ') : 'None reported'}
-
-Provide a structured audit with:
-1. SAFETY_SCORE: 1-10 (10 = safest)
-2. DOSAGE_CHECK: Is the dosage appropriate? (APPROPRIATE / TOO_HIGH / TOO_LOW / NEEDS_REVIEW)
-3. INTERACTIONS: Any drug interactions with current medications? (NONE / MINOR / MODERATE / SEVERE)
-4. WARNINGS: Any specific warnings or concerns
-5. RECOMMENDATION: APPROVE / APPROVE_WITH_MONITORING / REJECT / CONSULT_PHYSICIAN
-
-Format as JSON with these exact keys: safety_score, dosage_check, interactions, warnings, recommendation`;
-
-  try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.3,
-        max_tokens: 500
-      })
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error?.message || 'OpenAI API error');
-    }
-
-    const content = data.choices[0].message.content;
-    // Try to parse JSON from response
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
-    }
-    return basicAudit(medication, dosage);
-  } catch (error) {
-    console.error('Error calling OpenAI for prescription audit:', error);
-    return basicAudit(medication, dosage);
-  }
-}
-
-/**
- * Basic audit when LLM is unavailable
- */
-function basicAudit(medication, dosage) {
-  const highRiskMedications = ['warfarin', 'insulin', 'morphine', 'fentanyl', 'methotrexate', 'lithium'];
-  const isHighRisk = highRiskMedications.some(m => medication.toLowerCase().includes(m));
-  
-  const dosageNum = parseInt(dosage);
-  const isHighDosage = dosageNum > 500;
-
-  return {
-    safety_score: isHighRisk ? 4 : (isHighDosage ? 6 : 8),
-    dosage_check: isHighDosage ? 'TOO_HIGH' : 'APPROPRIATE',
-    interactions: 'NEEDS_REVIEW',
-    warnings: isHighRisk 
-      ? `${medication} is a high-risk medication requiring careful monitoring`
-      : 'Basic audit only - LLM not available for full analysis',
-    recommendation: isHighRisk ? 'CONSULT_PHYSICIAN' : 'APPROVE_WITH_MONITORING'
+  // Rule-based audit system
+  const result = {
+    safety_score: 8,
+    dosage_check: 'APPROPRIATE',
+    interactions: 'NONE',
+    warnings: [],
+    recommendation: 'APPROVE',
+    details: {}
   };
+
+  // High-risk medications database
+  const highRiskMedications = {
+    'warfarin': { risk: 'high', class: 'anticoagulant', interactions: ['aspirin', 'ibuprofen', 'naproxen'] },
+    'insulin': { risk: 'high', class: 'antidiabetic', interactions: ['alcohol', 'beta-blockers'] },
+    'morphine': { risk: 'high', class: 'opioid', interactions: ['benzodiazepines', 'alcohol'] },
+    'fentanyl': { risk: 'high', class: 'opioid', interactions: ['benzodiazepines', 'alcohol'] },
+    'methotrexate': { risk: 'high', class: 'immunosuppressant', interactions: ['nsaids', 'penicillins'] },
+    'lithium': { risk: 'high', class: 'mood stabilizer', interactions: ['nsaids', 'diuretics'] },
+    'digoxin': { risk: 'high', class: 'cardiac glycoside', interactions: ['amiodarone', 'verapamil'] },
+    'phenytoin': { risk: 'high', class: 'anticonvulsant', interactions: ['warfarin', 'amiodarone'] }
+  };
+
+  // Common medications with standard dosages
+  const commonDosages = {
+    'metformin': { min: 500, max: 2550, unit: 'mg', frequency: '1-3x daily' },
+    'lisinopril': { min: 5, max: 40, unit: 'mg', frequency: '1x daily' },
+    'amlodipine': { min: 2.5, max: 10, unit: 'mg', frequency: '1x daily' },
+    'omeprazole': { min: 10, max: 40, unit: 'mg', frequency: '1x daily' },
+    'atorvastatin': { min: 10, max: 80, unit: 'mg', frequency: '1x daily' },
+    'levothyroxine': { min: 25, max: 200, unit: 'mcg', frequency: '1x daily' },
+    'amlodipine': { min: 2.5, max: 10, unit: 'mg', frequency: '1x daily' },
+    'gabapentin': { min: 100, max: 800, unit: 'mg', frequency: '3x daily' },
+    'sertraline': { min: 25, max: 200, unit: 'mg', frequency: '1x daily' },
+    'escitalopram': { min: 5, max: 20, unit: 'mg', frequency: '1x daily' }
+  };
+
+  const medLower = medication.toLowerCase();
+  
+  // Check if medication is high-risk
+  for (const [key, info] of Object.entries(highRiskMedications)) {
+    if (medLower.includes(key)) {
+      result.safety_score = 4;
+      result.warnings.push(`${medication} is a HIGH-RISK ${info.class} medication`);
+      result.recommendation = 'CONSULT_PHYSICIAN';
+      result.details.risk_class = info.class;
+      
+      // Check for drug interactions
+      if (currentMedications.length > 0) {
+        for (const currentMed of currentMedications) {
+          if (info.interactions.some(i => currentMed.toLowerCase().includes(i))) {
+            result.safety_score = 2;
+            result.interactions = 'SEVERE';
+            result.warnings.push(`SEVERE interaction with ${currentMed}`);
+            result.recommendation = 'REJECT';
+          }
+        }
+      }
+      break;
+    }
+  }
+
+  // Check dosage if we have data
+  const dosageNum = parseInt(dosage);
+  if (!isNaN(dosageNum)) {
+    for (const [key, info] of Object.entries(commonDosages)) {
+      if (medLower.includes(key)) {
+        result.details.standard_range = `${info.min}-${info.max} ${info.unit}`;
+        result.details.frequency = info.frequency;
+        
+        if (dosageNum < info.min) {
+          result.dosage_check = 'TOO_LOW';
+          result.safety_score = Math.min(result.safety_score, 6);
+          result.warnings.push(`Dosage ${dosage} is below standard range (${info.min}-${info.max} ${info.unit})`);
+          result.recommendation = 'APPROVE_WITH_MONITORING';
+        } else if (dosageNum > info.max) {
+          result.dosage_check = 'TOO_HIGH';
+          result.safety_score = Math.min(result.safety_score, 4);
+          result.warnings.push(`Dosage ${dosage} exceeds standard range (${info.min}-${info.max} ${info.unit})`);
+          result.recommendation = 'REJECT';
+        }
+        break;
+      }
+    }
+  }
+
+  // Age-based adjustments
+  if (patientAge) {
+    if (patientAge < 12) {
+      result.warnings.push('Pediatric patient - verify weight-based dosing');
+      result.safety_score = Math.min(result.safety_score, 6);
+    } else if (patientAge > 65) {
+      result.warnings.push('Geriatric patient - consider reduced dosage');
+      result.safety_score = Math.min(result.safety_score, 7);
+    }
+  }
+
+  // Final recommendation logic
+  if (result.warnings.length === 0) {
+    result.recommendation = 'APPROVE';
+    result.safety_score = Math.max(result.safety_score, 8);
+  } else if (result.recommendation === 'APPROVE') {
+    result.recommendation = 'APPROVE_WITH_MONITORING';
+  }
+
+  return result;
 }
 
 /**
@@ -95,7 +127,7 @@ function getAuditBlocks(audit, medication, dosage) {
     'CONSULT_PHYSICIAN': '👨‍⚕️'
   }[audit.recommendation] || 'ℹ️';
 
-  return [
+  const blocks = [
     {
       type: "section",
       text: {
@@ -141,27 +173,43 @@ function getAuditBlocks(audit, medication, dosage) {
           text: `*Recommendation:*\n${recommendationEmoji} ${audit.recommendation}`
         }
       ]
-    },
-    {
+    }
+  ];
+
+  // Add warnings if any
+  if (audit.warnings.length > 0) {
+    blocks.push({
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*Warnings:*\n${audit.warnings}`
+        text: `*Warnings:*\n${audit.warnings.map(w => `• ${w}`).join('\n')}`
       }
-    },
-    {
-      type: "divider"
-    },
-    {
-      type: "context",
-      elements: [
-        {
-          type: "mrkdwn",
-          text: "This is an AI-assisted audit. Always verify with a qualified healthcare professional."
-        }
-      ]
-    }
-  ];
+    });
+  }
+
+  // Add details if available
+  if (audit.details.standard_range) {
+    blocks.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `*Standard Range:* ${audit.details.standard_range}\n*Frequency:* ${audit.details.frequency}`
+      }
+    });
+  }
+
+  blocks.push({ type: "divider" });
+  blocks.push({
+    type: "context",
+    elements: [
+      {
+        type: "mrkdwn",
+        text: "This is an AI-assisted audit. Always verify with a qualified healthcare professional."
+      }
+    ]
+  });
+
+  return blocks;
 }
 
 module.exports = {

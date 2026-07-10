@@ -21,9 +21,8 @@ Medical practices spend 20+ hours/week on scheduling calls. Patients wait on hol
 ## How
 
 1. **Slack Bolt SDK** — Listens to triage keywords via Socket Mode, returns interactive Block Kit cards
-2. **Supabase** — Reads doctor availability, writes booking logs, manages patient profiles
-3. **Resend** — Sends instant email confirmations upon booking
-4. **OpenAI** — Powers the Prescription Auditor for safety checks and drug interaction analysis
+2. **Supabase** — Reads doctor availability, writes booking logs, manages patient profiles, sends email notifications via Edge Functions
+3. **Rule-based AI** — Powers the Prescription Auditor with medication safety checks and drug interaction detection
 
 ---
 
@@ -112,16 +111,12 @@ clinicflow/
 ## Sponsor Tech Integration
 
 ### Supabase (Load-Bearing)
-- **How used:** Reads `Doctors` table for availability, writes to `appointments` and `Profiles` tables
-- **Why essential:** Without Supabase, the bot has no data to query. It IS the backend.
+- **How used:** Reads `Doctors` table for availability, writes to `appointments` and `Profiles` tables, sends email notifications via Edge Functions with Resend
+- **Why essential:** Without Supabase, the bot has no data to query and no way to send emails. It IS the backend.
 
-### Resend (Load-Bearing)
-- **How used:** Sends transactional email confirmations upon booking
-- **Why essential:** Patients expect confirmation. Without Resend, the booking loop is incomplete.
-
-### OpenAI (Load-Bearing)
-- **How used:** Powers the Prescription Auditor with GPT-4o-mini for safety analysis, dosage checks, and drug interaction detection
-- **Why essential:** Prescription auditing requires medical reasoning that basic rules can't provide.
+### Slack Bolt SDK (Load-Bearing)
+- **How used:** Real-time event handling via Socket Mode, Block Kit for interactive UI
+- **Why essential:** The entire user experience happens inside Slack.
 
 ---
 
@@ -134,8 +129,7 @@ clinicflow/
 | `SLACK_APP_TOKEN` | [api.slack.com/apps](https://api.slack.com/apps) → Socket Mode | Real-time events |
 | `SUPABASE_URL` | [supabase.com/dashboard](https://supabase.com/dashboard) | Database access |
 | `SUPABASE_ANON_KEY` | [supabase.com/dashboard](https://supabase.com/dashboard) → Settings → API | Database access |
-| `RESEND_API_KEY` | [resend.com/api-keys](https://resend.com/api-keys) | Email notifications |
-| `OPENAI_API_KEY` | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | Prescription auditing |
+| `SUPABASE_SERVICE_KEY` | [supabase.com/dashboard](https://supabase.com/dashboard) → Settings → API | Edge Functions |
 
 ---
 
