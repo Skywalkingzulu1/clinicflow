@@ -56,7 +56,7 @@ function registerListeners(app) {
         patientId: profile.id,
         doctorId: doctorId,
         reason: reason,
-        priceCredits: 150
+        priceCredits: 650
       });
 
       // Step 3: Trigger async Resend email notification

@@ -70,7 +70,7 @@ async function createProfile(email, name, role = 'PATIENT') {
 /**
  * Book an appointment in the database
  */
-async function bookAppointment({ patientId, doctorId, reason, appointmentType = 'VIDEO', priceCredits = 150 }) {
+async function bookAppointment({ patientId, doctorId, reason, appointmentType = 'VIDEO', priceCredits = 650 }) {
   const { data: maxIdData } = await supabase
     .from('appointments')
     .select('id')

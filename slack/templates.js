@@ -21,7 +21,7 @@ function getDoctorListBlocks(doctors, reason) {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*${doc.name}* - ${doc.specialty}\n📍 Location: ${doc.area || 'JHB'} | 🪙 Fee: ${doc.consultation_fee || 150} credits`
+          text: `*${doc.name}* - ${doc.specialty}\n📍 Location: ${doc.area || 'JHB'} | 🪙 Fee: R${doc.consultation_fee || 650}`
         },
         accessory: {
           type: "button",
