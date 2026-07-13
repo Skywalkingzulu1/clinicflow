@@ -23,7 +23,7 @@ server.tool(
     name: z.string().optional().describe("Filter by doctor name"),
   },
   async ({ specialty, name }) => {
-    let query = supabase.from("doctors").select("*").eq("is_available", true);
+    let query = supabase.from("Doctors").select("*").eq("is_available", true);
     if (specialty) query = query.ilike("specialty", `%${specialty}%`);
     if (name) query = query.ilike("name", `%${name}%`);
 
@@ -51,11 +51,11 @@ server.tool(
     reason: z.string().describe("Reason for visit (e.g. 'Annual checkup', 'Tooth pain')"),
   },
   async ({ patient_email, patient_name, doctor_id, doctor_name, reason }) => {
-    let { data: profile } = await supabase.from("profiles").select("id").eq("email", patient_email).single();
+    let { data: profile } = await supabase.from("Profiles").select("id").eq("email", patient_email).single();
 
     if (!profile) {
-      const { data: newProfile } = await supabase.from("profiles").insert({
-        email: patient_email, full_name: patient_name, role: "PATIENT"
+      const { data: newProfile } = await supabase.from("Profiles").insert({
+        email: patient_email, name: patient_name, role: "PATIENT", credits: 500
       }).select("id").single();
       profile = newProfile;
     }
@@ -154,7 +154,7 @@ server.tool(
     doctor_id: z.string().uuid().optional().describe("Doctor ID to filter by"),
   },
   async ({ patient_email, doctor_id }) => {
-    let query = supabase.from("appointments").select("*, doctors(name, specialty), profiles(full_name, email)").order("created_at", { ascending: false });
+    let query = supabase.from("appointments").select("*").order("created_at", { ascending: false });
 
     if (doctor_id) query = query.eq("doctor_id", doctor_id);
     if (patient_email) query = query.eq("profiles.email", patient_email);
@@ -167,7 +167,7 @@ server.tool(
       content: [{
         type: "text",
         text: data.map(a =>
-          `${a.status} | ${a.profiles?.full_name || "Unknown"} → ${a.doctors?.name || "Unknown"} (${a.doctors?.specialty || ""})\n  Reason: ${a.reason} | Fee: R${a.price_credits} | ${new Date(a.created_at).toLocaleDateString()}`
+          `${a.status} | Patient #${a.patient_id} → Doctor #${a.doctor_id}\n  Reason: ${a.reason || "N/A"} | Fee: R${a.price_credits} | ${new Date(a.created_at).toLocaleDateString()}`
         ).join("\n\n")
       }]
     };

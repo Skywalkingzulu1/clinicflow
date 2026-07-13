@@ -111,6 +111,8 @@
     @media (max-width: 768px) {
       .hero { grid-template-columns: 1fr; text-align: center; }
       .hero-buttons { justify-content: center; }
+      .mcp > div { grid-template-columns: 1fr !important; }
+      .demo > div { grid-template-columns: 1fr !important; }
     }
     .hero-badge {
       display: inline-flex;
@@ -330,8 +332,70 @@
       </div>
     </section>
 
+    <section class="how-it-works" style="padding: var(--space-16) 0; border-top: 1px solid var(--border);">
+      <h2 class="section-title">How It Works</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-8); max-width: 900px; margin: 0 auto;">
+        <div style="text-align: center;">
+          <div style="width: 56px; height: 56px; background: rgba(94,234,212,0.1); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent); font-weight: 700; margin-bottom: var(--space-4);">1</div>
+          <h3 style="font-size: 1.05rem; margin-bottom: var(--space-2);">Triage</h3>
+          <p style="color: var(--muted); font-size: 0.9rem;">Patient describes symptoms in Slack. ClinicFlow analyzes and identifies the right specialist.</p>
+        </div>
+        <div style="text-align: center;">
+          <div style="width: 56px; height: 56px; background: rgba(94,234,212,0.1); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent); font-weight: 700; margin-bottom: var(--space-4);">2</div>
+          <h3 style="font-size: 1.05rem; margin-bottom: var(--space-2);">Book</h3>
+          <p style="color: var(--muted); font-size: 0.9rem;">Browse available doctors, check fees and locations, and pick one with a single click.</p>
+        </div>
+        <div style="text-align: center;">
+          <div style="width: 56px; height: 56px; background: rgba(94,234,212,0.1); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent); font-weight: 700; margin-bottom: var(--space-4);">3</div>
+          <h3 style="font-size: 1.05rem; margin-bottom: var(--space-2);">Confirm</h3>
+          <p style="color: var(--muted); font-size: 0.9rem;">Booking is confirmed instantly. Email sent, doctor notified, patient notified — all automated.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo" style="padding: var(--space-16) 0; border-top: 1px solid var(--border);">
+      <h2 class="section-title">Live Demo — Try It in Slack</h2>
+      <p style="text-align: center; color: var(--muted); max-width: 600px; margin: 0 auto var(--space-8); font-size: 0.95rem;">Type any of these messages in a channel where ClinicFlow is installed to see it in action.</p>
+      <div style="max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-4);">
+          <span style="color: var(--accent); font-weight: 600; font-size: 0.85rem;">Symptom Triage</span>
+          <code style="display: block; margin-top: var(--space-2); font-size: 0.9rem; color: var(--fg); word-break: break-all;">"I have a persistent headache"</code>
+        </div>
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-4);">
+          <span style="color: var(--accent); font-weight: 600; font-size: 0.85rem;">Request GP</span>
+          <code style="display: block; margin-top: var(--space-2); font-size: 0.9rem; color: var(--fg); word-break: break-all;">"I need to see a general practitioner"</code>
+        </div>
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-4);">
+          <span style="color: var(--accent); font-weight: 600; font-size: 0.85rem;">Specialist Referral</span>
+          <code style="display: block; margin-top: var(--space-2); font-size: 0.9rem; color: var(--fg); word-break: break-all;">"I need a dermatologist for a skin issue"</code>
+        </div>
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-4);">
+          <span style="color: var(--accent); font-weight: 600; font-size: 0.85rem;">General Inquiry</span>
+          <code style="display: block; margin-top: var(--space-2); font-size: 0.9rem; color: var(--fg); word-break: break-all;">"Book me an appointment at Sandton"</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="mcp" style="padding: var(--space-16) 0; border-top: 1px solid var(--border);">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); align-items: center; max-width: 900px; margin: 0 auto;">
+        <div>
+          <div style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-1) var(--space-3); background: rgba(94,234,212,0.1); border: 1px solid rgba(94,234,212,0.2); border-radius: var(--radius-full); font-size: 0.8rem; color: var(--accent); margin-bottom: var(--space-4);">MCP Server</div>
+          <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: var(--space-4);">ClinicFlow is an MCP Server</h2>
+          <p style="color: var(--muted); font-size: 0.95rem; line-height: 1.7;">Built on the Model Context Protocol, ClinicFlow exposes structured tools for doctor search, booking, and prescription auditing. Any MCP-compatible client — Claude, Cursor, or custom agents — can call these tools directly.</p>
+        </div>
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-6); font-family: monospace; font-size: 0.85rem; line-height: 1.8;">
+          <div style="color: var(--muted); margin-bottom: var(--space-2);">// Exposed MCP tools</div>
+          <div style="color: var(--accent);">search_doctors<span style="color: var(--muted);">(symptoms, area)</span></div>
+          <div style="color: var(--accent);">book_appointment<span style="color: var(--muted);">(doctorId, reason)</span></div>
+          <div style="color: var(--accent);">check_prescription<span style="color: var(--muted);">(medications)</span></div>
+          <div style="color: var(--accent);">get_availability<span style="color: var(--muted);">(doctorId)</span></div>
+        </div>
+      </div>
+    </section>
+
     <section class="features">
       <h2 class="section-title">Product Architecture</h2>
+      <p style="text-align: center; color: var(--muted); margin-top: calc(-1 * var(--space-8)); margin-bottom: var(--space-8); font-size: 0.95rem;">Full system diagram and component breakdown available in <a href="https://github.com/Skywalkingzulu1/clinicflow/blob/main/ARCHITECTURE.md">ARCHITECTURE.md</a></p>
       <div class="grid">
         <div class="card">
           <div class="card-icon">
@@ -372,6 +436,8 @@
         <span class="pill">Supabase</span>
         <span class="pill">Block Kit</span>
         <span class="pill">Socket Mode</span>
+        <span class="pill">MCP Server</span>
+        <span class="pill">Model Context Protocol</span>
       </div>
     </section>
   </div>
