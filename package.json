@@ -8,10 +8,18 @@
     "dev": "node --watch index.js"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@slack/bolt": "^3.14.0",
     "@supabase/supabase-js": "^2.38.4",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "zod": "^4.4.3"
   },
-  "keywords": ["slack", "bot", "healthcare", "triage", "appointment"],
+  "keywords": [
+    "slack",
+    "bot",
+    "healthcare",
+    "triage",
+    "appointment"
+  ],
   "license": "MIT"
 }
